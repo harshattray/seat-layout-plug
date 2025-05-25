@@ -142,6 +142,7 @@ const App: React.FC = () => {
               key={selectedConfig.id} 
               initialLayoutConfig={selectedConfig.layout} 
               dbName={`SeatingDB-${selectedConfig.id}`} 
+              bookNowButtonColor="sky-600"
             />
           </div>
         ) : (
