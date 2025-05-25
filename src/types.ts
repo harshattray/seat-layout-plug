@@ -1,4 +1,10 @@
-import { ElementType } from "react";
+/**
+ * @file types.ts
+ * @description Defines shared TypeScript types and interfaces used throughout the application.
+ * @author Harsha Attray
+ */
+
+import { ElementType } from 'react';
 
 export interface SeatType {
   icon?: ElementType;
@@ -10,7 +16,7 @@ export interface Seat {
   key: string;
   row: number;
   col: number;
-  status: "available" | "selected" | "booked";
+  status: 'available' | 'selected' | 'booked';
   sectionId: string;
   displayLabel: string;
 }
