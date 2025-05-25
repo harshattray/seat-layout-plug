@@ -34,6 +34,8 @@ export interface Layout {
 export interface SeatingLayoutProps {
   initialLayoutConfig: Omit<Layout, 'seats'>;
   dbName?: string;
+  bookNowButtonText?: string;
+  bookNowButtonColor?: string;
 }
 
 const MAX_SELECTABLE_SEATS = 10;
@@ -41,6 +43,8 @@ const MAX_SELECTABLE_SEATS = 10;
 const SeatingLayout: React.FC<SeatingLayoutProps> = ({ 
   initialLayoutConfig,
   dbName = "SeatingDB",
+  bookNowButtonText = "Book Now",
+  bookNowButtonColor = "blue-500",
 }) => {
   const [seats, setSeats] = useState<Record<string, Seat>>({});
   const [notification, setNotification] = useState<string | null>(null);
@@ -300,9 +304,6 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({
            seatTypeData = initialLayoutConfig.seatTypes[section.seatType];
          }
        }
-       if (!seat || !section || !seatTypeData) {
-        console.warn(`getSeatInfo(${seatKey}): Missing data. Seat: ${!!seat}, Section: ${!!section}, SeatType: ${!!seatTypeData}`);
-       }
        return { seat, section, seatType: seatTypeData };
    }, [seats, initialLayoutConfig]);
 
@@ -388,9 +389,9 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({
       <button 
           onClick={bookSeats} 
           disabled={Object.values(seats).filter(s => s.status === 'selected').length === 0}
-          className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`mt-6 bg-white !text-${bookNowButtonColor} border-2 border-${bookNowButtonColor} hover:bg-${bookNowButtonColor} hover:!text-white !important font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed`}
       >
-          Book Now ({Object.values(seats).filter(s => s.status === 'selected').length} selected)
+          {bookNowButtonText} ({Object.values(seats).filter(s => s.status === 'selected').length} selected)
       </button>
     </div>
   );
