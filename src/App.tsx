@@ -65,9 +65,45 @@ const theater2Layout: Omit<Layout, 'seats'> = {
   },
 };
 
+const theater3Layout: Omit<Layout, 'seats'> = {
+  sections: [
+    {
+      id: "balcony-t3", name: "Upper Balcony", seatType: "balcony",
+      rowPatterns: [
+        [{ type: 'seats', count: 10 }],
+        [{ type: 'seats', count: 12 }],
+      ],
+      rows: 2, 
+      cols: 12 
+    },
+    {
+      id: "loge-t3", name: "Loge Boxes", seatType: "loge",
+      rowPatterns: [
+        [{ type: 'seats', count: 3 }, { type: 'gap', count: 1 }, { type: 'seats', count: 3 }],
+        [{ type: 'seats', count: 3 }, { type: 'gap', count: 1 }, { type: 'seats', count: 3 }],
+      ],
+      rows: 2, 
+      cols: 7 
+    },
+    {
+      id: "economy-t3", name: "Economy Plus", seatType: "economy_plus",
+      rowPatterns: Array(4).fill(null).map(() => [{ type: 'seats', count: 15 }]),
+      rows: 4,
+      cols: 15
+    },
+  ],
+  seatTypes: {
+    balcony: { color: "#B0E0E6", price: 150 }, 
+    loge: { icon: FilmIcon, color: "#DAA520", price: 250 }, 
+    economy_plus: { color: "#90EE90", price: 180 }, 
+    unavailable: { icon: NoSymbolIcon, color: "#A9A9A9", price: 0 },
+  },
+};
+
 const theaterConfigs: TheaterConfig[] = [
   { id: "theater1", name: "Cinema Paradiso - Screen 1", layout: theater1Layout },
   { id: "theater2", name: "Majestic Movies - Audi A", layout: theater2Layout },
+  { id: "theater3", name: "Indieplex - Hall C (Mixed Seating)", layout: theater3Layout }, 
 ];
 
 const App: React.FC = () => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, ElementType } from "react";
 import { openDB, IDBPDatabase } from "idb";
 
 export interface SeatType { 
-  icon: ElementType;
+  icon?: ElementType;
   color: string;
   price: number;
 }
@@ -173,40 +173,41 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({ initialLayoutConfig }) =>
   }
 
   const SeatDisplayComponent: React.FC<SeatProps> = ({ status, icon: Icon, color, onClick, displayLabel }) => {
-    // console.log(`SeatDisplayComponent props: status=${status}, icon=${Icon ? 'Exists' : 'Null'}, color=${color}`);
     let bgColor = color;
     let isGap = !displayLabel;
 
     if (isGap) {
-        // Style for gaps, make them less prominent or invisible but taking space
         return <div style={{ width: 30, height: 30, margin: 4 }} />;
     }
 
-    if (status === "booked") bgColor = "#A9A9A9"; // Darker grey for booked or actual gaps
+    if (status === "booked") bgColor = "#A9A9A9"; 
     if (status === "selected") bgColor = "#8FBC8F";
+
+    const hasIcon = !!Icon;
 
     return (
       <div
-        onClick={status !== "booked" ? onClick : undefined} // Only allow click if not booked (gaps are 'booked')
+        onClick={status !== "booked" ? onClick : undefined} 
         style={{
           width: 30,
           height: 30,
           margin: 4,
           backgroundColor: bgColor,
           display: "flex",
-          flexDirection: 'column', // To stack icon and label
-          justifyContent: "center",
+          flexDirection: 'column', 
+          justifyContent: hasIcon ? "space-between" : "center", 
           alignItems: "center",
           cursor: status !== "booked" ? "pointer" : "not-allowed",
           border: status === "selected" ? "2px solid #4682B4" : "1px solid #ddd",
           borderRadius: '4px',
-          fontSize: '0.6rem', // Smaller font for label
-          color: '#333' // Label color
+          fontSize: hasIcon ? '0.6rem' : '0.75rem', 
+          color: status === 'selected' ? 'white' : '#333',
+          padding: hasIcon ? '2px 0' : '0', 
         }}
-        title={displayLabel} // Show label on hover
+        title={displayLabel} 
       >
-        {Icon && <Icon style={{ fontSize: '0.8rem', color: status === 'selected' ? 'white' : '#1f2937', marginBottom: '2px' }} />}
-        {displayLabel}
+        {Icon && <Icon style={{ fontSize: '0.8rem', color: status === 'selected' ? 'white' : '#1f2937' }} />}
+        <div style={{ lineHeight: hasIcon ? '0.8rem' : 'normal' }}>{displayLabel}</div>
       </div>
     );
   };
