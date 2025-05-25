@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SeatingLayout, { Layout } from "./SeatingLayout"; 
+import SeatingLayout, { Layout, SeatingLayoutProps } from "./SeatingLayout"; 
 import { BeakerIcon, BuildingStorefrontIcon, FilmIcon, NoSymbolIcon } from '@heroicons/react/24/solid'; 
 
 interface TheaterConfig {
@@ -120,7 +120,7 @@ const App: React.FC = () => {
   const selectedConfig = theaterConfigs.find(tc => tc.id === selectedTheaterId);
 
   return (
-    <div className="p-4 min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100">
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-700">Movie Theater Seating</h1>
       </header>
@@ -129,15 +129,21 @@ const App: React.FC = () => {
         <div>
           <button 
             onClick={handleBackToTheaters}
-            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            className="mb-6 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
           >
             &larr; Back to Theaters
           </button>
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">{selectedConfig.name}</h2>
-          <SeatingLayout initialLayoutConfig={selectedConfig.layout} /> 
+          <div className="mt-8">
+            <SeatingLayout 
+              key={selectedConfig.id} 
+              initialLayoutConfig={selectedConfig.layout} 
+              dbName={`SeatingDB-${selectedConfig.id}`} 
+            />
+          </div>
         </div>
       ) : (
-        <div className="space-y-4 max-w-md mx-auto">
+        <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Select a Theater</h2>
           {theaterConfigs.map((theater) => (
             <button
