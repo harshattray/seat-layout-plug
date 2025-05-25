@@ -16,7 +16,7 @@ A dynamic and interactive web application for selecting seats in a movie theater
 - **Responsive Design**: Adapts to various screen sizes for a seamless user experience.
 - **User Notifications**: Provides instant feedback for actions like seat selection, booking confirmations, or selection limits.
 - **Configurable Selection Limits**: Set a maximum number of seats a user can select at once.
-- **Persistent State (Optional)**: Seat selections and bookings can persist across sessions using IndexedDB (if `useSeats` hook's IndexedDB features are fully enabled).
+- **Robust Persistent State with IndexedDB**: Leverages IndexedDB to save the state of all seats (available, booked) for each theater configuration. This ensures that seat statuses persist across browser sessions and page reloads, providing a consistent experience and simulating a real-world booking system's memory.
 
 ## Layout Customization
 
@@ -41,7 +41,7 @@ The seating layout is highly configurable through the `theaterLayouts.ts` file a
     - `price`: The price for this seat type.
   - **`maxSeatsSelectable`** (defined in `SeatingLayoutProps`): Control the maximum number of seats a user can select.
 
-This structured configuration allows for creating a wide variety of theater layouts, from simple arrangements to complex, multi-section venues with different pricing tiers and accessibility options.
+This structured configuration allows for creating a wide variety of theater layouts, from simple arrangements to complex, multi-section venues with different pricing tiers and accessibility options. Ultimately, this configuration-driven engine is designed to be so flexible that it can dynamically generate virtually _any_ conceivable seating arrangement based purely on the JSON-like structures provided in `theaterLayouts.ts`, without needing to change the core application logic.
 
 ## Screenshots
 
@@ -57,11 +57,10 @@ Here are some views of the application:
 
 - **Frontend**: React, TypeScript, Vite
 - **Styling**: Tailwind CSS
-- **State Management**: React Hooks (useState, useEffect, useCallback, custom hooks)
+- **State Management**: React Hooks (useState, useEffect, useCallback, custom hooks), IndexedDB (via `idb` library for persistence)
 - **Testing**: Vitest, React Testing Library
 - **Linting/Formatting**: Prettier
 - **Git Hooks**: Husky, lint-staged
-- **(Client-side Storage)**: IndexedDB (via `idb` library)
 
 ## Getting Started
 
@@ -108,7 +107,8 @@ In the project directory, you can run:
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` file for more information (if you add one).
+This project is licensed under the GNU General Public License v3.0.
+See the `LICENSE` file for more details.
 
 ---
 
