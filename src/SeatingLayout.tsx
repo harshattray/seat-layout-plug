@@ -380,6 +380,11 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({
         ))}
       </div>
 
+      {/* Screen representation - Updated container styling */}
+      <div className="w-full max-w-xl my-4"> 
+        <img src="/assets/screen.png" alt="Screen" style={{ display: 'block', margin: '0 auto', maxWidth: '100%', height: 'auto' }} /> 
+      </div>
+
       <button 
           onClick={bookSeats} 
           disabled={Object.values(seats).filter(s => s.status === 'selected').length === 0}
