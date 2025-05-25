@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { openDB, IDBPDatabase } from 'idb';
-import { Seat, Section, SeatingLayoutProps } from '../types';
+import { Seat, Section, SeatingLayoutProps } from '@types';
 const calculateDisplayLabelForSeat = (
   targetGridRow: number, // 0-indexed from top
   targetGridCol: number, // 0-indexed from left

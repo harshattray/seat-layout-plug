@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import SeatingLayout from "./components/SeatingLayout"; 
+import SeatingLayout from "@components/SeatingLayout"; 
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import { theaterConfigs } from './config/theaterLayouts';
+import { theaterConfigs } from '@config/theaterLayouts';
 
 const App: React.FC = () => {
   const [selectedTheaterId, setSelectedTheaterId] = useState<string | null>(null);

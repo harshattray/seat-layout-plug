@@ -1,10 +1,10 @@
 import React, { useCallback } from "react"; 
-import { Seat, Section, SeatingLayoutProps, SeatType } from "../types";
-import { useNotification } from "../hooks/useNotification";
-import { useSeats } from "../hooks/useSeats";
-import SeatDisplayComponent from "./SeatDisplay";
-
-const MAX_SELECTABLE_SEATS = 10;
+import { Seat, Section, SeatingLayoutProps, SeatType } from "@types";
+import { useNotification } from "@hooks/useNotification";
+import { useSeats } from "@hooks/useSeats";
+import SeatDisplayComponent from "@components/SeatDisplay";
+import { useSeatInteraction } from "@hooks/useSeatInteraction";
+import { useSeatBooking } from "@hooks/useSeatBooking";
 
 const SeatingLayout: React.FC<SeatingLayoutProps> = ({ 
   initialLayoutConfig,
@@ -16,43 +16,13 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({
   const { notification, showNotification } = useNotification();
   const { seats, setSeats } = useSeats(initialLayoutConfig, dbName);
 
-  const handleSeatClick = (sectionId: string, row: number, col: number) => {
-    const seatKey = `${sectionId}-${row}-${col}`;
-    const seat = seats[seatKey];
+  const { handleSeatClick, selectedSeatsCount } = useSeatInteraction({
+    seats,
+    setSeats,
+    showNotification,
+  });
 
-    if (!seat || seat.status === 'booked' || !seat.displayLabel) return; 
-
-    const selectedSeatsArray = Object.values(seats).filter(s => s.status === 'selected');
-
-    if (seat.status === 'selected') {
-      setSeats(prevSeats => ({
-        ...prevSeats,
-        [seatKey]: { ...seat, status: 'available' },
-      }));
-    } else if (seat.status === 'available') {
-      if (selectedSeatsArray.length >= MAX_SELECTABLE_SEATS) {
-        showNotification(`You can select a maximum of ${MAX_SELECTABLE_SEATS} seats.`);
-        return;
-      }
-      setSeats(prevSeats => ({
-        ...prevSeats,
-        [seatKey]: { ...seat, status: 'selected' },
-      }));
-    }
-  };
-
-  const handleBookNow = () => {
-    console.log("Booking selected seats");
-    setSeats(prevSeats => {
-      const updatedSeats = { ...prevSeats };
-      for (const key in updatedSeats) {
-        if (updatedSeats[key].status === "selected") {
-          updatedSeats[key] = { ...updatedSeats[key], status: "booked" as const };
-        }
-      }
-      return updatedSeats;
-    });
-  };
+  const { handleBookNow } = useSeatBooking({ setSeats });
 
   const getSeatInfo = useCallback((seatKey: string) => {
     const seat = seats[seatKey];
@@ -73,8 +43,6 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({
   if (Object.keys(seats).length === 0 && initialLayoutConfig.sections.length > 0) {
     return <div className="p-4 text-center">Loading seating layout...</div>;
   }
-
-  const selectedSeatsCount = Object.values(seats).filter(s => s.status === 'selected').length;
 
   return (
     <div className="p-4 flex flex-col items-center mx-auto relative">

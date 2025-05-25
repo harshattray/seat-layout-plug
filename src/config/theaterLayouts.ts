@@ -1,4 +1,4 @@
-import { Layout } from '../types';
+import { Layout } from '@types';
 import { BeakerIcon, BuildingStorefrontIcon, FilmIcon, NoSymbolIcon } from '@heroicons/react/24/solid';
 
 export interface TheaterConfig {
