@@ -173,40 +173,56 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({ initialLayoutConfig }) =>
   }
 
   const SeatDisplayComponent: React.FC<SeatProps> = ({ status, icon: Icon, color, onClick, displayLabel }) => {
-    let bgColor = color;
-    let isGap = !displayLabel;
+    const [isHovered, setIsHovered] = useState(false);
+    let bgColor, textColor, borderColor;
+    const seatColor = color; // Original color passed for the seat type
 
+    let isGap = !displayLabel;
     if (isGap) {
         return <div style={{ width: 30, height: 30, margin: 4 }} />;
     }
 
-    if (status === "booked") bgColor = "#A9A9A9"; 
-    if (status === "selected") bgColor = "#8FBC8F";
+    if (status === "booked") {
+      bgColor = "#A9A9A9";
+      textColor = "#DDD"; // Lighter text for booked seats
+      borderColor = "#A9A9A9";
+    } else if (status === "selected" || (isHovered && status === "available")) {
+      bgColor = seatColor;
+      textColor = "white";
+      borderColor = seatColor;
+    } else { // Available, not hovered
+      bgColor = "white";
+      textColor = seatColor;
+      borderColor = seatColor;
+    }
 
     const hasIcon = !!Icon;
 
     return (
       <div
         onClick={status !== "booked" ? onClick : undefined} 
+        onMouseEnter={() => status === "available" && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         style={{
           width: 30,
           height: 30,
           margin: 4,
           backgroundColor: bgColor,
+          color: textColor, // Applied to text label
+          border: `1.5px solid ${borderColor}`,
           display: "flex",
           flexDirection: 'column', 
           justifyContent: hasIcon ? "space-between" : "center", 
           alignItems: "center",
           cursor: status !== "booked" ? "pointer" : "not-allowed",
-          border: status === "selected" ? "2px solid #4682B4" : "1px solid #ddd",
           borderRadius: '4px',
           fontSize: hasIcon ? '0.6rem' : '0.75rem', 
-          color: status === 'selected' ? 'white' : '#333',
           padding: hasIcon ? '2px 0' : '0', 
+          transition: 'background-color 0.2s, color 0.2s, border-color 0.2s', // Smooth transition
         }}
         title={displayLabel} 
       >
-        {Icon && <Icon style={{ fontSize: '0.8rem', color: status === 'selected' ? 'white' : '#1f2937' }} />}
+        {Icon && <Icon style={{ fontSize: '0.8rem', color: textColor }} />}
         <div style={{ lineHeight: hasIcon ? '0.8rem' : 'normal' }}>{displayLabel}</div>
       </div>
     );
@@ -298,38 +314,52 @@ const SeatingLayout: React.FC<SeatingLayoutProps> = ({ initialLayoutConfig }) =>
       <div className="w-full flex flex-col items-center">
         {initialLayoutConfig && initialLayoutConfig.sections && initialLayoutConfig.sections.map((section: Section) => (
           <div key={section.id} className="mb-6 flex flex-col items-center w-full">
-            <h2 className="text-lg mb-2">{section.name} (Rs. {initialLayoutConfig.seatTypes[section.seatType]?.price})</h2>
+            <h2 className="text-lg mb-2 text-gray-600">{section.name} (Rs. {initialLayoutConfig.seatTypes[section.seatType]?.price})</h2>
             {/* Container for all visual rows in this section */}
-            <div className="border p-1 inline-block"> {/* p-1 or p-2 for the border spacing */}
-              {Array.from({ length: section.rows }).map((_, rowIndex) => (
-                // Each visual row container
-                <div key={`section-${section.id}-row-${rowIndex}`} className="flex flex-nowrap justify-center">
-                  {Array.from({ length: section.cols }).map((_, colIndex) => {
-                    const seatKey = `${section.id}-${rowIndex}-${colIndex}`;
-                    const { seat, seatType } = getSeatInfo(seatKey);
+            <div className="border p-1 inline-block"> 
+              {Array.from({ length: section.rows }).map((_, rowIndex) => {
+                const displayRowIdentifier = String.fromCharCode(65 + section.rows - 1 - rowIndex);
+                return (
+                  // Each visual row container, now with row identifier
+                  <div key={`section-${section.id}-row-${rowIndex}`} className="flex flex-nowrap items-center justify-center">
+                    {/* Row Identifier Display */}
+                    <div 
+                      style={{
+                        width: 20, // Fixed width for the label
+                        marginRight: 8, // Space between label and first seat
+                        textAlign: 'center',
+                        fontSize: '0.8rem',
+                        color: '#4A5568', // Tailwind gray-600
+                        fontWeight: 'medium'
+                      }}
+                    >
+                      {displayRowIdentifier}
+                    </div>
+                    {/* Seats in the row */}
+                    {Array.from({ length: section.cols }).map((_, colIndex) => {
+                      const seatKey = `${section.id}-${rowIndex}-${colIndex}`;
+                      const { seat, seatType } = getSeatInfo(seatKey);
 
-                    if (!seat) {
-                      // This case should be rare if initializeSeats covers all grid cells
-                      // Render a placeholder to maintain grid structure if a seat object is unexpectedly missing
-                      return <div key={seatKey} style={{ width: 30, height: 30, margin: 4, visibility: 'hidden' }} />;
-                    }
+                      if (!seat) {
+                        return <div key={seatKey} style={{ width: 30, height: 30, margin: 4, visibility: 'hidden' }} />;
+                      }
 
-                    // seatType is only relevant if seat.displayLabel is present (i.e., not a gap)
-                    const currentSeatType = seat.displayLabel ? seatType : undefined;
+                      const currentSeatType = seat.displayLabel ? seatType : undefined;
 
-                    return (
-                      <SeatDisplayComponent
-                        key={seatKey} // Key for React's reconciliation
-                        status={seat.status}
-                        icon={currentSeatType?.icon || null}
-                        color={currentSeatType?.color || "transparent"} // Pass transparent for gaps (where currentSeatType is undefined)
-                        onClick={() => toggleSeatStatus(section.id, seat.row, seat.col)}
-                        displayLabel={seat.displayLabel}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
+                      return (
+                        <SeatDisplayComponent
+                          key={seatKey} 
+                          status={seat.status}
+                          icon={currentSeatType?.icon || null}
+                          color={currentSeatType?.color || "transparent"} 
+                          onClick={() => toggleSeatStatus(section.id, seat.row, seat.col)}
+                          displayLabel={seat.displayLabel}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}
