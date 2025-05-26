@@ -174,7 +174,7 @@ export const theaterConfigs: TheaterConfig[] = [
     id: 'theater1',
     name: 'Cinema Paradiso - Screen 1',
     layout: theater1Layout,
-    screenImageUrl: '/assets/screen-theater1.png',
+    screenImageUrl: '/assets/screen.png',
   },
   { id: 'theater2', name: 'Majestic Movies - Audi A', layout: theater2Layout },
   {
